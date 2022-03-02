@@ -13,6 +13,7 @@ https://bitbucket.org/GoD_Tony/updater/downloads/updater.smx
 https://github.com/splewis/csgo-practice-mode/releases/download/1.3.3/practicemode_1.3.3.zip
 https://github.com/splewis/csgo-pug-setup/releases/download/2.0.5/pugsetup_2.0.5.zip
 https://github.com/splewis/csgo-retakes/releases/download/v0.3.4/retakes_0.3.4.zip
+https://github.com/splewis/get5/releases/download/0.7.2/get5_0.7.2.zip
 https://github.com/b3none/retakes-instadefuse/releases/download/1.4.0/retakes-instadefuse.smx
 https://github.com/b3none/retakes-autoplant/releases/download/2.3.0/retakes_autoplant.smx
 https://github.com/b3none/retakes-hud/releases/download/2.2.5/retakes-hud.smx
@@ -63,7 +64,13 @@ install_plugin() {
       "zip")
         curl -sSL -o "$filename" "$1"
         echo "Extracting $filename..."
-        unzip -oq "$filename" -d "$CSGO_DIR/csgo"
+        # chmod 655 "$CSGO_DIR/csgo/addons/sourcemod/plugins/*"
+        if [[ $filename == *"splewis/get5"  ]]; then
+          # Need this case until new release of get5 is out with changed file structure
+          unzip $filename "get5/*" -d ${$CSGO_DIR}/csgo/
+        else
+          unzip -oq "$filename" -d "$CSGO_DIR/csgo"
+        fi
         rm "$filename"
         create_install_marker "$1"
         ;;

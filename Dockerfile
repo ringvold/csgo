@@ -22,6 +22,8 @@ RUN set -xo pipefail \
           locales \
           curl \
           unzip \
+          wget \
+          jq \
       && locale-gen en_US.UTF-8 \
       && adduser --disabled-password --gecos "" steam \
       && mkdir ${STEAMCMD_DIR} \

@@ -4,19 +4,35 @@ set -ueo pipefail
 
 : "${CSGO_DIR:?'ERROR: CSGO_DIR IS NOT SET!'}"
 
-export RETAKES="${RETAKES:-0}"
+# Metamod:Source
+metamodsourceversion="1.11"
+metamodsourcescrapeurl="https://mms.alliedmods.net/mmsdrop/${metamodsourceversion}/mmsource-latest-linux"
+metamodsourcelatestfile=$(wget "${metamodsourcescrapeurl}" -q -O -)
+metamodsourcedownloadurl="https://mms.alliedmods.net/mmsdrop/${metamodsourceversion}/${metamodsourcelatestfile}"
+metamodsourceurl="${metamodsourcedownloadurl}"
+# Sourcemod
+sourcemodversion="1.11"
+sourcemodscrapeurl="https://sm.alliedmods.net/smdrop/${sourcemodversion}/sourcemod-latest-linux"
+sourcemodlatestfile=$(wget "${sourcemodscrapeurl}" -q -O -)
+sourcemoddownloadurl="https://sm.alliedmods.net/smdrop/${sourcemodversion}/${sourcemodlatestfile}"
+sourcemodurl="${sourcemoddownloadurl}"
+# Steamworks
+steamworkslastbuild=$(curl -H "Authorization: Bearer ${GITHUB_TOKEN}" --connect-timeout 10 -sL https://api.github.com/repos/hexa-core-eu/SteamWorks/releases/latest --connect-timeout 10 -sL https://api.github.com/repos/hexa-core-eu/SteamWorks/releases/latest | jq '.assets[] |select(.browser_download_url | endswith("linux.zip"))')
+steamworkslatestfile=$(echo -e "${steamworkslastbuild}" | jq -r '.name')
+steamworkslatestfilelink=$(echo -e "${steamworkslastbuild}" | jq -r '.browser_download_url')
+# CS:GO Mods
+get5lastbuild=$(curl -H "Authorization: Bearer ${GITHUB_TOKEN}" --connect-timeout 10 -sL https://api.github.com/repos/splewis/get5/releases/latest | jq '.assets[] |select(.browser_download_url | endswith(".tar.gz"))')
+get5latestfile=$(echo -e "${get5lastbuild}" | jq -r '.name')
+get5latestfilelink=$(echo -e "${get5lastbuild}" | jq -r '.browser_download_url')
 
-INSTALL_PLUGINS="${INSTALL_PLUGINS:-https://mms.alliedmods.net/mmsdrop/1.10/mmsource-1.10.7-git971-linux.tar.gz
-https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6478-linux.tar.gz
-http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-linux.tar.gz
-https://bitbucket.org/GoD_Tony/updater/downloads/updater.smx
-https://github.com/splewis/csgo-practice-mode/releases/download/1.3.3/practicemode_1.3.3.zip
-https://github.com/splewis/csgo-pug-setup/releases/download/2.0.5/pugsetup_2.0.5.zip
-https://github.com/splewis/csgo-retakes/releases/download/v0.3.4/retakes_0.3.4.zip
-https://github.com/b3none/retakes-instadefuse/releases/download/1.4.0/retakes-instadefuse.smx
-https://github.com/b3none/retakes-autoplant/releases/download/2.3.0/retakes_autoplant.smx
-https://github.com/b3none/retakes-hud/releases/download/2.2.5/retakes-hud.smx
-}"
+DEFAULT_PLUGINS="${metamodsourceurl}
+${sourcemodurl}
+${steamworkslatestfilelink}
+${get5latestfilelink}
+"
+
+INSTALL_PLUGINS="${INSTALL_PLUGINS:-${DEFAULT_PLUGINS}}"
+
 
 get_checksum_from_string () {
   local md5
@@ -96,29 +112,3 @@ IFS=',' read -ra STEAMIDS <<< "$SOURCEMOD_ADMINS"
 for id in "${STEAMIDS[@]}"; do
     echo "\"$id\" \"99:z\"" >> "$CSGO_DIR/csgo/addons/sourcemod/configs/admins_simple.ini"
 done
-
-PLUGINS_ENABLED_DIR="$CSGO_DIR/csgo/addons/sourcemod/plugins"
-PLUGINS_DISABLED_DIR="$CSGO_DIR/csgo/addons/sourcemod/plugins/disabled"
-RETAKES_PLUGINS="retakes.smx retakes-instadefuse.smx retakes_autoplant.smx retakes-hud.smx retakes_standardallocator.smx"
-PUGSETUP_PLUGINS="pugsetup.smx pugsetup_teamnames.smx pugsetup_damageprint.smx"
-
-# Disable Retakes by default so that we have a working and predictable state without plugins conflict
-if [[ -f "$PLUGINS_ENABLED_DIR"/retakes.smx ]]; then
-  mv "$PLUGINS_ENABLED_DIR"/retakes*.smx "$PLUGINS_DISABLED_DIR"/
-fi
-
-if [ "$RETAKES" = "1" ]; then
-  if [[ -f "$PLUGINS_ENABLED_DIR"/pugsetup.smx ]]; then
-    (cd "$PLUGINS_ENABLED_DIR" && mv pugsetup*.smx "$PLUGINS_DISABLED_DIR")
-    echo "Disabled PugSetup plugins"
-  fi
-  # shellcheck disable=SC2086
-  (cd "$PLUGINS_DISABLED_DIR" && mv $RETAKES_PLUGINS "$PLUGINS_ENABLED_DIR")
-  echo "Enabled Retakes plugins"
-else
-  if [[ -f "$PLUGINS_DISABLED_DIR"/pugsetup.smx ]]; then
-    # shellcheck disable=SC2086
-    (cd "$PLUGINS_DISABLED_DIR" && mv $PUGSETUP_PLUGINS "$PLUGINS_ENABLED_DIR")
-    echo "Enabled PugSetup plugins"
-  fi
-fi

@@ -10,6 +10,7 @@ services:
     container_name: csgo-ds
 
     environment:
+      GITHUB_TOKEN: ""
       SERVER_HOSTNAME: "Counter-Strike: Global Offensive Dedicated Server"
       SERVER_PASSWORD:
       RCON_PASSWORD: changeme
@@ -28,7 +29,6 @@ services:
       MAXPLAYERS: 12
       TV_ENABLE: 1
       LAN: 0
-      RETAKES: 0
 
     volumes:
       - type: volume

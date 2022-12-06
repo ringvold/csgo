@@ -7,19 +7,12 @@ The following addons and plugins are included by default:
 - [Metamod](https://www.sourcemm.net/)
 - [SourceMod](https://www.sourcemod.net/)
 - [SteamWorks](https://forums.alliedmods.net/showthread.php?t=229556)
-- [Updater](https://bitbucket.org/GoD_Tony/updater/downloads/updater.smx)
-- [PugSetup](https://github.com/splewis/csgo-pug-setup)
-- [Practice Mode](https://github.com/splewis/csgo-practice-mode)
-- [Retakes](https://github.com/splewis/csgo-retakes) (**disabled by default**)
-
-To get a 10man/gather going, simply connect and type `.setup` in chat. Practice Mode should also be available from the menu.
-
-Retakes is disabled by default. To enable it, set the environment variable `RETAKES=1` and restart the container. Use can later use the cvar `sm_retakes_enabled 0` to turn if off on-demand.
+- [Get5](https://splewis.github.io/get5/latest/)
 
 ## How to Use
 
 ```bash
-docker pull kmallea/csgo:latest
+docker pull ghcr.io/ringvold/csgo:latest
 ```
 
 To use the image as-is, run it with a few useful environment variables to configure the server:
@@ -32,13 +25,14 @@ docker run \
   --detach \
   --mount source=csgo-data,target=/home/steam/csgo \
   --network=host \
+  --env "GITHUB_TOKEN=githubtoken" \
   --env "SERVER_HOSTNAME=hostname" \
   --env "SERVER_PASSWORD=password" \
   --env "RCON_PASSWORD=rconpassword" \
   --env "STEAM_ACCOUNT=gamelogintoken" \
   --env "AUTHKEY=webapikey" \
   --env "SOURCEMOD_ADMINS=STEAM_1:0:123456,STEAM_1:0:654321" \
-  kmallea/csgo
+  ghcr.io/ringvold/csgo:latest
 ```
 
 Would you rather use a bind volume so that you can access file contents directly? Use `--mount type=bind,source=$(pwd),target=/home/steam/csgo` instead of the one in the example above.
@@ -74,6 +68,7 @@ If you're on a LAN, add the environment variable `LAN=1` (e.g., `--env "LAN=1"`)
 Below are the default values for environment variables that control the server configuration. To override, pass one or more of these to docker using the `-e` or `--env` argument (example above).
 
 ```bash
+GITHUB_TOKEN=changeme
 SERVER_HOSTNAME=Counter-Strike: Global Offensive Dedicated Server
 SERVER_PASSWORD=
 RCON_PASSWORD=changeme
@@ -94,7 +89,6 @@ MAXPLAYERS=12
 TV_ENABLE=1
 LAN=0
 SOURCEMOD_ADMINS=
-RETAKES=0
 NOMASTER=0
 ```
 

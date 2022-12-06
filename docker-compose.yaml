@@ -6,7 +6,7 @@ volumes:
 
 services:
   csgo:
-    image: kmallea/csgo:latest
+    image: ghcr.io/ringvold/csgo
     container_name: csgo-ds
 
     environment:

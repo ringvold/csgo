@@ -107,7 +107,7 @@ fi
 [[ -z ${CI+x} ]] && "$STEAMCMD_DIR/steamcmd.sh" +login anonymous +force_install_dir "$CSGO_DIR" +app_update "$CSGO_APP_ID" +quit
 
 # Install and configure plugins & extensions
-"$BASH" "$STEAM_DIR/manage_plugins.sh"d
+"$BASH" "$STEAM_DIR/manage_plugins.sh"
 
 SRCDS_ARGUMENTS=(
   "-console"

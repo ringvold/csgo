@@ -27,7 +27,6 @@ get5latestfilelink=$(echo -e "${get5lastbuild}" | jq -r '.browser_download_url')
 
 DEFAULT_PLUGINS="${metamodsourceurl}
 ${sourcemodurl}
-${steamworkslatestfilelink}
 ${get5latestfilelink}
 "
 
@@ -96,6 +95,31 @@ install_plugin() {
   fi
 }
 
+install_steamworks_plugin() {
+  filename=${1##*/}
+  filename_ext=$(echo "${1##*.}" | awk '{print tolower($0)}')
+  echo ""
+  echo "$1"
+  echo $filename
+  echo $filename_ext
+  echo ""
+  if ! file_url_exists "$1"; then
+    echo "Plugin download check FAILED for $filename";
+    return 0
+  fi
+  if ! is_plugin_installed "$1"; then
+    echo "Downloading $1..."
+        curl -sSL -o "$filename" "$1"
+        (cd "$CSGO_DIR/csgo/addons/sourcemod/extensions/" && curl -sSLO "$1" && unzip -oq "$filename" && cp build/package/addons/sourcemod/extensions/SteamWorks.ext.so .)
+        echo "Extracting $filename..."
+        unzip -oq "$filename" -d "$CSGO_DIR/csgo"
+        rm "$filename"
+        create_install_marker "$1"
+  else
+    echo "Plugin $filename is already installed, skipping"
+  fi
+}
+
 echo "Installing plugins..."
 
 mkdir -p "$CSGO_DIR/csgo"
@@ -103,6 +127,10 @@ IFS=' ' read -ra PLUGIN_URLS <<< "$(echo "$INSTALL_PLUGINS" | tr "\n" " ")"
 for URL in "${PLUGIN_URLS[@]}"; do
   install_plugin "$URL"
 done
+
+# SteamWorks
+echo "Installing SteamWorks"
+install_steamworks_plugin $steamworkslatestfilelink
 
 echo "Finished installing plugins."
 

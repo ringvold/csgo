@@ -1,12 +1,16 @@
 # CSGO containerized
 
+This is a fork of [https://github.com/kaimallea/csgo](kaimallea/csgo) with focus on getting get5 
+working. The main motivation for this was to have a quick way of getting a get5 server up and 
+running for developing [https://github.com/ringvold/get5_api](ringvold/get5_api)
+
 The Dockerfile will build an image for running a Counter-Strike: Global Offensive dedicated server in a container.
 
 The following addons and plugins are included by default:
 
 - [Metamod](https://www.sourcemm.net/)
 - [SourceMod](https://www.sourcemod.net/)
-- [SteamWorks](https://forums.alliedmods.net/showthread.php?t=229556)
+- [SteamWorks](https://github.com/hexa-core-eu/SteamWorks)
 - [Get5](https://splewis.github.io/get5/latest/)
 
 ## How to Use

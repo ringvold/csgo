@@ -10,10 +10,13 @@ The Dockerfile will build an image for running a Counter-Strike: Global Offensiv
 
 The following addons and plugins are included by default:
 
-- [Get5](https://splewis.github.io/get5/latest/)
+- [Get5]
 - [SteamWorks](https://github.com/hexa-core-eu/SteamWorks)
 - [SourceMod](https://www.sourcemod.net/)
 - [Metamod](https://www.sourcemm.net/)
+
+
+[Get5]: https://splewis.github.io/get5
 
 ## How to Use
 
